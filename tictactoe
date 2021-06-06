@@ -1,0 +1,153 @@
+# 1. display board
+
+def displayboard(board):
+    print('\n'*10)
+    print(board[7]+" | "+board[8]+" | "+board[9])
+    print("__________")
+    print(board[4]+" | "+board[5]+" | "+board[6])
+    print("__________")
+    print(board[1]+" | "+board[2]+" | "+board[3])
+
+# 2. taking x or o from user
+def player_input():
+
+    '''
+    output = (player1_marker, player2_marker)      #docstring which will give u the idea about output appearance
+    '''                                            # tuple unpacking
+
+    user_input=' '
+    while user_input!='X' and user_input!='O':              #if user enters letter other than x or o, it will keep
+        user_input=input('player1 : choose X or O : ').upper()           #asking to choose
+    if user_input == 'X':
+        return ('X','O')              # if player 1 chooses x/o , it will automatically assign o/x to player 2
+    else:
+        return ('O','X')
+
+# 3. placing x or o
+def place_user_input(board,user_input,position):
+    board[position] = user_input
+
+# 4. winning condition for tictactoe
+def win_check(board,user_input):
+    if ((board[1] == board[2] == board[3] == user_input) or  # check for last row
+       (board[4] == board[5] == board[6] == user_input) or   # check for middle row
+       (board[7] == board[8] == board[9] == user_input) or   # check for top row
+       (board[1] == board[4] == board[7] == user_input) or   # check for first column
+       (board[2] == board[5] == board[8] == user_input) or   # check for second column
+       (board[3] == board[6] == board[9] == user_input) or   # check for third column
+       (board[1] == board[5] == board[9] == user_input) or   # 1 diagonal
+       (board[3] == board[5] == board[7] == user_input)):    # 2 diagonal
+        return True
+
+# 5. which player went first
+import random
+
+def choose_first():
+    flip = random.randint(0,1)        #its like a flipping a coin , for who gets the first chance
+                                      # randint() choose the random number each time
+    if flip == 0:
+        print("player 1 gets chance")
+        return 'player1'
+    else:
+        print("player 2 gets chance")
+        return 'player2'
+
+# 6. for space check whether a space is freely available
+
+def space_check(board,position):
+
+    if board[position] == " ":
+        return True
+    else:
+        return False
+
+# 7. check if the board is full or not
+
+def full_board_check(board):
+
+    for i in range(1,10):
+        if space_check(board,i):    # here space_check() runs and checks for the space, if the space is empty
+            return False            # then full_board_check() returns false bcoz space is empty thats why
+    # for board is full             # it is not full
+    return True
+
+# 8. asks for the player's next position and for the free position by step 6(space_check())
+
+def player_choice(board):
+
+    position = 0
+    # checks whether user enters character other than 1-9 returns false and also  check  for the free position
+    while position not in [1,2,3,4,5,6,7,8,9] or not space_check(board,position):
+        position = int(input(" choose  X or O (1-9) : "))
+
+    return position
+
+# 9. replay the game
+
+def replay():
+    choice = input("play again?? enter yes or no")
+    return choice == 'yes'                     # here if user wants to play again then he types yes and function
+                                               # returns yes otherwise program doesnt run further as
+                                               # user doesnt want to play again
+                                               # only runs further when user types yes
+
+
+while True:
+    the_board = [" "]*10
+
+    print("Welcome to Tic Tac Toe game!")
+
+    (player1_marker, player2_marker) = player_input()
+
+    turn = choose_first()
+
+    print(turn + ' will go first')
+
+    play = input("Ready to play? y or n")
+
+    if play == 'y':
+        game_on = True
+    else:
+        game_on = False
+    while game_on:
+        if turn == 'player1':
+
+            displayboard(the_board)
+
+            pos = player_choice(the_board)
+
+            place_user_input(the_board,player1_marker,pos)
+
+            if win_check(the_board,player1_marker):
+                displayboard(the_board)
+                print("player 1 has WON")
+                game_on = False
+            else:
+                if full_board_check(the_board):
+                    displayboard(the_board)
+                    print("match tied")
+                    break
+                else:
+                    turn = 'player2'
+
+        else:
+            displayboard(the_board)
+
+            pos = player_choice(the_board)
+
+            place_user_input(the_board,player2_marker,pos)
+
+            if win_check(the_board, player2_marker):
+                displayboard(the_board)
+                print("player 2 has WON")
+                game_on = False
+            else:
+                if full_board_check(the_board):
+                    displayboard(the_board)
+                    print("match tied")
+                    break
+                else:
+                    turn = 'player1'
+
+    if not replay():
+        break
